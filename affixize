@@ -1,0 +1,72 @@
+#!/usr/bin/perl
+
+# Print all affix forms of a given word
+# Usage: affixize word FLAGS affixfile
+# Here FLAGS may be regex ranges, e.g. "A-DFZ" or simply "KQ"
+# Read the affix file, find the flag, then go through all regexes and print results
+# This uses KOI8 encoding only (does not read charsets from affix file).
+# Use * flags only (no ~ flags)
+
+$verbose=0;
+
+$affixfile=$ARGV[2];
+
+$KOI_uppercase="áâ÷çäå³öúéêëìíîïğòóôõæèãşûıÿùøüàñ\xB2\xB6\xBA\xBC\xB1";
+$KOI_lowercase="ÁÂ×ÇÄÅ£ÖÚÉÊËÌÍÎÏĞÒÓÔÕÆÈÃŞÛİßÙØÜÀÑ\xA2\xA6\xAA\xAC\xA1";
+$command="tr/$KOI_uppercase/$KOI_lowercase/";
+$word=$ARGV[0];
+$word =~ tr/áâ÷çäå³öúéêëìíîïğòóôõæèãşûıÿùøüàñ\xB2\xB6\xBA\xBC\xB1/ÁÂ×ÇÄÅ£ÖÚÉÊËÌÍÎÏĞÒÓÔÕÆÈÃŞÛİßÙØÜÀÑ\xA2\xA6\xAA\xAC\xA1/;
+$flags=$ARGV[1];
+$flagsre="[" . $flags . "]";
+
+if ($affixfile eq "") {
+	print STDERR "Usage: affixize word FLAGS affixfile\n";
+	exit;
+}
+
+open(AFF,"$affixfile");
+
+$found=0;
+while(<AFF>) {
+	s/#[^#]*$//;
+	tr/áâ÷çäå³öúéêëìíîïğòóôõæèãşûıÿùøüàñ\xB2\xB6\xBA\xBC\xB1/ÁÂ×ÇÄÅ£ÖÚÉÊËÌÍÎÏĞÒÓÔÕÆÈÃŞÛİßÙØÜÀÑ\xA2\xA6\xAA\xAC\xA1/;
+	if (/flag/) {
+		if (/\s*flag .*$flagsre:/) {
+			$found=1;
+			print STDERR "Using flag(s) $flagsre\n" if ($verbose);
+		} else {
+			$found=0;
+		}
+	} elsif ($found) {
+		$newform=1;	# Found a flag from the flag set
+		# Now look for replacement strings
+		if (/^\s*(.*)\s*>\s*-(.*),-\s*$/) {	# COND > -SUFF1,-
+			$pattern=$1;
+			$remove="$2";
+			$append="";
+		} elsif (/^\s*(.*)\s*>\s*-(.*),(.*)\s*$/) {	# COND > -SUFF1,SUFF2
+			$pattern=$1;
+			$remove=$2;
+			$append=$3;
+		} elsif (/^\s*(.*)\s*>\s*(.*)\s*$/) {	# COND > SUFF2
+			$pattern=$1;
+			$remove="";
+			$append=$2;
+		} else {
+			$newform=0;
+		}
+		if ($newform) {
+			$pattern =~ s/[ \t]//g;
+			if ($word =~ /$pattern$/) {
+				$word_new=$word;
+				$word_new =~ s/$remove$/$append/;
+				$word_new =~ s/[ \t]//g;
+				print "$word_new\n";
+			} else {
+				print STDERR "word $word does not match pattern $pattern of flag(s) $flags\n" if (not $word =~ /$pattern$/ and $verbose);
+			}
+		}
+	}
+}
+
+close(AFF);

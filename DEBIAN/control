@@ -1,0 +1,14 @@
+Package: irussian-old
+Version: XXX
+Architecture: i386
+Section: non-free/text
+Priority: optional
+Depends: ispell
+Provides: ispell-dictionary
+Installed-Size: 3025
+Maintainer: Serge Winitzki <winitzki@geocities.com>
+Source: gramdict-ru
+Description: The "Old" Russian dictionary for ispell.
+ This is the Russian dictionary for ispell for the old Russian
+ orthography. The obsolete Cyrillic characters are represented
+ in the KOI8-C encoding.

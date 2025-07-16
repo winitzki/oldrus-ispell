@@ -1,0 +1,243 @@
+<HEAD><TITLE>KOI8-C: an extention of KOI8-R for old Russian orthography, Belorussian, Macedonian, Serbian and Ukrainian</TITLE>
+<!--META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=KOI8-R"-->
+</HEAD>
+
+<h5>
+What's on this page:
+<a href=#1>Intro</a> ...
+<a href=#2>KOI8-C&nbsp;map</a> ...
+<a href=#3>fonts</a> ...
+<a href=#4>printing</a> ...
+<a href=#5>sample&nbsp;texts</a> ...
+<a href=#6>Russian&nbsp;spellchecking</a> ...
+<a href=#6>Convert&nbsp;orthography</a> ...
+<a href=email_me.html>Email&nbsp;me</a>
+<br>Mirrors:
+<a href=http://oldrus-ispell.sourceforge.net/koi8-extended.html>US</a> ...
+<a href=http://members.fortunecity.com/brodsky/TL/LS/koi8-extended.html>UK</a> ...
+<a href=http://www.rvb.ru/TL/LS/koi8-extended.html>Russia</a>
+</h5>
+<p><hr><p>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var uagent=navigator.userAgent;
+if (uagent.indexOf("Win") >= 0) {
+document.writeln("<p><center><b>You are using M$ Windows and it seems that you are out of luck with old Russian letters; even if I used Unicode you wouldn't see them because Micro$oft simply did not put them into their fonts! Micro$oft didn't supply any free font creation tools and I can't help you.</b></center><p>");
+}
+if (uagent.indexOf("MSIE") >= 0) {
+document.writeln("<p><center><b>I'm also against using any Micro$oft software.</b></center><p>");
+}
+//alert("I advise against using any Micro$oft software.");
+//window.open("new.html","newWindow","toolbar=no,location=1,directories=no,status=no,menubar=1,scrollbars=yes,resizable=1,copyhistory=0);
+document.writeln("<h1 align=center>Please turn OFF javascript to best view this page.</h1>");
+//-->
+</SCRIPT>
+
+<h2>KOI8-C: расширение кодировки KOI8-R</h2>
+
+<p>Дайджест: кодировка KOI8-R дополнена буквами украинского, белорусского,
+сербского, македонского языков, буквами ять, фита, ижица, а также некоторыми
+типографскими символами; результат называется KOI8-C. Созданы словарь правописания, раскладка клавиатуры и экранные шрифты X window (BDF) для дореформенной русской орфографии.
+
+<p>Summary: (This page is in Russian, in the KOI8-R encoding.) I describe my extension of the KOI8-R encoding which I call "KOI8-C". This new 8-bit Cyrillic encoding can be used for Russian, Ukrainian, Byelorussian, Serbian, Macedonian languages (like the CP1251 code page) but also includes letters for the old (pre-1917) Russian orthography ("yat", "fita", "izhitsa") and some frequently used typographic symbols (same positions as CP1251). The possibility to type texts using old Russian orthography and the extra typographic symbols are the main reasons to use this encoding. I have also created: a keyboard map (xmodmap) and a set of X window screen fonts (BDF) in KOI8-C encoding (fully compatible with KOI8-R and KOI8-U as regards letters); a perl script to print texts to Postscript using a BDF font; and a spell checker for old Russian orthography.
+
+<a name=1></a><h4 align=right>Intro</h4>
+
+<p><dd>Кодировка КОИ (KOI8-R) традиционно используется для русскоязычных
+текстов, посылаемых электронной почтой и выкладываемых на Интернет. Я
+предлагаю расширение этой кодировки -- "<b>KOI8-C</b>", включающее буквы
+украинского, белорусского, сербского, македонского языков, а также буквы
+устаревшей русской орфографии (ять, фита, ижица) и некоторые типографские
+знаки. Позиции дополнительных букв были выбраны с учётом украинской
+кодировки (KOI8-U) с украинскими и белорусскими буквами и кодировки CP1252
+так, чтобы тексты в кодировках KOI8-R и KOI8-U читались бы без изменений.
+Позиции других символов были выбраны в совместимыми с кодировкой CP1252,
+чтобы были видны часто (по ошибке) вставляемые в русские (КОИ-8) сетевые
+страницы символы специальных кавычек, тире и т.д. Пользуясь KOI8-C, вы
+сможете читать тексты на сети, созданные в среде "windows" и
+перекодированные в KOI8-R без учёта этих символов, оставляемых без
+изменений всеми перекодировщиками CP1252 -> KOI8-R.
+
+<dd>По сравнению с KOI8-R, многие символы псевдографики и другие символы,
+по историческим причинам находящиеся там, заменены на кириллицу и на
+наиболее часто употребляемые типографские знаки. Из таблицы KOI8-R были
+удалены символы, которые не используются в современных компьютерных
+системах. В частности, шрифты из единственного широко распространённого
+набора для X Window в кодировке KOI8-R (пакет "xrus" Андрея Чернова со
+шрифтами "-cronyx-" и его производные) никогда не содержали символов,
+удалённых мной из таблицы KOI8-R, и, по-видимому, нет программ, которые бы
+в них нуждались. Поэтому простая замена KOI8-R на KOI8-C для представления
+кириллицы никак не повлияет на текущие компьютерные системы, и в то же
+время позволит вводить дополнительные символы кириллицы и типографские
+знаки. Скомпилировав lynx с поддержкой KOI8-C, вы сможете полноценно читать
+значительно большее количество существующих страниц сети.
+
+<a name=2></a><h4 align=right>Specification</h4>
+
+<table border=1 align=left>
+<tr><td><table border=0>
+<tr><td align=center><font size=-1><b>Download:</b></font>
+<tr><td><font size=-1>Specification: <a href=KOI8-C.txt><tt>KOI8-C.txt</tt></a></font>
+<tr><td><font size=-1>map for xmodmap: <a href=koi8.xmm.txt><tt>koi8c.xmm</tt></a></font>
+<tr><td><font size=-1>map for Win9x: <a href=kbdru-koi8c.zip><tt>kbdru-koi8c</tt></a></font>
+<tr><td><font size=-1>files for <a href="http://artax.karlin.mff.cuni.cz/~mikulas/links/"><tt>links</tt></a>: <a href=links_koi8c.tar.gz><tt>links_.tar.gz</tt></a></font>
+</table>
+</table>
+
+<p><dd><a href=KOI8-C.txt>Таблица соответствия KOI8-C и Unicode</a>, в стандартном формате. С помощью этого файла сравнительно легко скомпилировать, например, <a href="http://lynx.browser.org"><tt>lynx</tt></a> или <a href="http://artax.karlin.mff.cuni.cz/~mikulas/links/"><tt>links</tt></a> с поддержкой кодировки KOI8-C.
+
+<p><dd>Вот предлагаемое расположение букв старой русской орфографии:
+
+<pre>
+Название    Adobe PS   Unicode   Предлагаемый   Клавиша  "Русская  Символ
+буквы       name                 код KOI8-C    "QWERTY"  Латиница" KOI8-C
+
+Ижица      afii10148  0x474=1140   177=0xB1      нет        ~V        ╠
+ижица      afii10196  0x475=1141   161=0xA1      нет        ~v        ║
+Фита       afii10147  0x472=1138   188=0xBC      +          ~F        ╪
+фита       afii10195  0x473=1139   172=0xAC      =          ~f        ╛
+Ять        afii10146  0x462=1122   178=0xB2      ~          E~        ╡
+ять        afii10194  0x463=1123   162=0xA2      `          e~        ╒
+И с точкой afii10055  0x406=1030   182=0xB6      |          I~        ╤
+и с точкой afii10103  0x456=1110   166=0xA6      \          i~        ╕
+</pre>
+<p>
+<dd>Для справки приводим также кодировку букв "ё" и "Ё":
+<pre>
+Ё          afii10023  0x401=1025     179=0xB3    #         Yo, Jo     Ё
+ё          afii10071  0x451=1105     163=0xA3    /         yo, jo     ё
+</pre>
+
+<p><dd>Предлагаемое расширение поддерживается раскладкой клавиатуры
+"jcukeng-koi8-c", шрифтами xcyr-2.3 и перекодировщиком <a
+href=323.txt>323</a> версии 2.5+ (перевод из латиницы и обратно). Есть
+также <a href=kbdru-koi8c.zip>аналогичная раскладка</a> для Windoze 95/98.
+
+<p><dd>Вот <a href=koi8.xmm.txt>пример полной раскладки клавиатуры</a> для программы xruskb (файл типа jcukeng-koi8.xmm).
+
+<!-- begin keybd -->
+<table border=1 cellspacing=0 cellpadding=2 align=center>
+<tr>
+<td colspan=3><sup>╡</sup> <sub>╒</sub><td colspan=3><sup>!</sup>
+<sub>1</sub><td colspan=3><sup>"</sup> <sub>2</sub><td
+colspan=3><sup>Ё</sup> <sub>3</sub><td colspan=3><sup>;</sup>
+<sub>4</sub><td colspan=3><sup>:</sup> <sub>5</sub><td
+colspan=3><sup>,</sup> <sub>6</sub><td colspan=3><sup>.</sup>
+<sub>7</sub><td colspan=3><sup>*</sup> <sub>8</sub><td
+colspan=3><sup>(</sup> <sub>9</sub><td colspan=3><sup>)</sup>
+<sub>0</sub><td colspan=3><sup>_</sup> <sub>-</sub><td
+colspan=3><sup>╪</sup> <sub>╛</sub><td colspan=5><font
+size=-1>Backspace</font>
+<tr>
+<td colspan=4><font size=-1>Tab</font><td colspan=3><sup>Й</sup>
+<sub>й</sub><td colspan=3><sup>Ц</sup> <sub>ц</sub><td
+colspan=3><sup>У</sup> <sub>у</sub><td colspan=3><sup>К</sup>
+<sub>к</sub><td colspan=3><sup>Е</sup> <sub>е</sub><td
+colspan=3><sup>Н</sup> <sub>н</sub><td colspan=3><sup>Г</sup>
+<sub>г</sub><td colspan=3><sup>Ш</sup><sub>ш</sub><td
+colspan=3><sup>Щ</sup><sub>щ</sub><td colspan=3><sup>З</sup> <sub>з</sub><td
+colspan=3><sup>Х</sup> <sub>х</sub><td colspan=3><sup>Ъ</sup>
+<sub>ъ</sub><td colspan=2><sup>╤</sup> <sub>╕</sub>
+<tr>
+<td colspan=5><font size=-1>CapsLock</font><td colspan=3><sup>Ф</sup>
+<sub>ф</sub><td colspan=3><sup>Ы</sup><sub>ы</sub><td colspan=3><sup>В</sup>
+<sub>в</sub><td colspan=3><sup>А</sup> <sub>а</sub><td
+colspan=3><sup>П</sup> <sub>п</sub><td colspan=3><sup>Р</sup>
+<sub>р</sub><td colspan=3><sup>О</sup> <sub>о</sub><td
+colspan=3><sup>Л</sup> <sub>л</sub><td colspan=3><sup>Д</sup>
+<sub>д</sub><td colspan=3><sup>Ж</sup><sub>ж</sub><td colspan=3><sup>Э</sup>
+<sub>э</sub><td colspan=6><font size=-1>Enter</font>
+<tr>
+<td colspan=6><font size=-1>Shift</font><td colspan=3><sup>Я</sup>
+<sub>я</sub><td colspan=3><sup>Ч</sup> <sub>ч</sub><td
+colspan=3><sup>С</sup> <sub>с</sub><td colspan=3><sup>М</sup>
+<sub>м</sub><td colspan=3><sup>И</sup> <sub>и</sub><td
+colspan=3><sup>Т</sup> <sub>т</sub><td colspan=3><sup>Ь</sup>
+<sub>ь</sub><td colspan=3><sup>Б</sup> <sub>б</sub><td
+colspan=3><sup>Ю</sup><sub>ю</sub><td colspan=3><sup>?</sup> <sub>ё</sub><td
+colspan=8><font size=-1>Shift</font>
+<tr>
+<td colspan=4><font size=-1>Ctrl</font><td colspan=4>&nbsp;<td
+colspan=3><font size=-1>Alt</font><td colspan=23 align=center><font
+size=-1><font size=-1>Space</font><td colspan=4><font size=-1>Alt</font><td
+colspan=3>&nbsp;<td colspan=3><font size=-1>Ctrl</font>
+</table>
+
+<!-- end keybd -->
+
+<h5 align=center><i>Пример раскладки русской клавиатуры для KOI8-C</i></h5>
+
+<a name=3></a><h4 align=right>Fonts</h4>
+
+
+<table border=1 align=left>
+<tr><td><table border=0>
+<tr><td align=center><font size=-1><b>Download fonts:</b></font>
+<tr><td><font size=-1><a
+href="http://sourceforge.net/projects/oldrus-ispell/">at SourceForge</a> </font> 
+<tr><td><font size=-1>for Windoze: <a href=koi8cfon.zip><tt>KOI8-C</tt> screen fonts</a>,
+<br>Unicode: <a href=xserif-oldrus.zip>Xserif</a>,
+<a href=royal.zip>Royal Arial+Times</a></font>
+</table>
+</table>
+
+<p><dd>Мной также созданы растровые шрифты для X Window, <tt>xcyr-2.3-koi8r.tar.gz</tt>, аналогичные <a
+href=http://nagual.pp.ru/~ache/koi8/dist/xrus-2.3.1-src.tgz>cronyx
+xrus-2.3.1-src.tar.gz</a> <a href=http://nagual.pp.ru/~ache/koi8.html>Андрея Чернова</a>, но
+включающие дополнительные символы кириллицы и прочие знаки из таблицы KOI8-C. Шрифты в вышеприведённом архиве помечены кодировкой KOI8-R для совместимости с существующими программами. Исходники шрифтов <a href="http://sourceforge.net/projects/oldrus-ispell/">см. на SourceForge</a>; их можно свободно распространять и модифицировать. В пакет входит возможность перекодировки из KOI8-C в CP-1251, ISO-8859-5, KOI8-RU. С помощью программ-конверторов <a href=bdftofon.zip><tt>bdftofon</tt> и <tt>pcftofon</tt></a> можно перевести шрифты в формат FON для системы Windoze. Вот <a href=koi8cfon.zip>минимальный набор шрифтов для Windoze</a>.
+
+<p><dd>Расположение символов в верхней части ASCII-таблицы следующее:
+
+<p><center><img src=mapkoi8c.png></center>
+<h5 align=center>Вид шрифта koi12x24 в xmbdfed</h5>
+
+<p><dd><i>В текущей версии шрифтов (2.3.8) уже откорректированы все символы в интервале 0x80-0xA0.</i>
+
+<p><dd>Имеется также свободно распространяемый <a href=xserif_oldrus.zip>TrueType-шрифт Christoph'а Singer'а "XSerif Old Russian" кодировки 1251 и Unicode</a> с некоторыми буквами для устаревшей орфографии (на нестандартных позициях в CP-1251). Мой перекодировщик <tt>323</tt> поддерживает именно эту кодировку. Этот шрифт можно использовать для Unicode-программ. Есть также набор <a href=royal.zip>Royal Arial + Royal Times</a>, это Unicode-шрифты на базе стандартных Windoze шрифтов, но содержащие буквы Ять, Фита, Ижица (только normal, нет bold и italic)
+
+<p><dd>Наконец, вот <a href=koi8ttf.zip>комплект русских шрифтов</a> (740KB; Courier, Helvetica, Times) в кодировке КОИ-8, формата TrueType (имеются не все символы, зато шрифты хорошего качества).
+
+<a name=4></a><h4 align=right>Printing</h4>
+<p><dd>Для черновой печати текстов старой орфографии теперь можно использовать мою <b>новую программу</b> <a href=txtbdf2ps.html><tt>txtbdf2ps</tt></a> -- для наилучших результатов используйте BDF-шрифт высокого разрешения. С помощью свободно распространяемой программы <a href=http://crl.nmsu.edu/~mleisher/ttf2bdf.html><tt>ttf2bdf</tt></a> можно приготовить BDF-шрифты из шрифтов TrueType. Сделайте это в достаточно высоком разрешении, и принтер не заметит, что вы не используете масштабируемые шрифты! Вы сможете даже отредактировать отдельные буквы, если вас что-то не устраивает, с помощью программы <a href=http://crl.nmsu.edu/~mleisher/xmbdfed.html><tt>xmbdfed</tt></a>. Я приготовил BDF-шрифт <a href=tnr-koi8c.zip>TNR-KOI8C.BDF</a> в кодировке KOI8-C и разрешении 720DPI из Times New Roman (бесплатный Unicode-шрифт, доступный на сайте Micro$oft) и добавил в него буквы ять, фита и ижица. (При печати с помощью него я рекомендую устанавливать lineskip=1, так как высота букв шрифта уже правильно подобрана.)
+
+<a name=5></a><h4 align=right>Texts in old Russian orthography</h4>
+<p><dd>Я подготовил к помещению в Интернет книгу И. Солоневича "Россия в
+концлагере", изданную в Болгарии в 1938 году в дореформенной орфографии. Прочитайте <a
+href=http://www.geocities.com/Athens/Forum/5344/AntiSoviet/solon1.html>первую главу</a> книги для проверки шрифтов. (Для сканирования и распознавания была использована программа Presto OCR Pro 3.0.)
+
+<dd>Я собираю тексты в старой орфографии. <a href=http://www.fortunecity.com/victorian/twain/286/TL/oldrus/>Вот пока что вся моя коллекция</a>.
+
+<dd>Прочтите <a href=intro_oo.html>введение в старое правописание</a> и <a href=http://www.fortunecity.com/victorian/twain/286/TL/oldrus/koi8c/rus_rules.html>более полный свод правил</a>.
+
+<a name=6></a><h4 align=right>Russian spellchecking</h4>
+
+<table border=1 align=left>
+<tr><td><table>
+<tr><td align=center><font size=-1><b>Download spellchecker:</b></font>
+<tr><td><font size=-1><a href="http://sourceforge.net/projects/oldrus-ispell/">at SourceForge</a></font>
+</table>
+</table>
+
+<p><dd>Для <b>проверки правописания</b> русскоязычных документов можно использовать свободно распространяемую <a href=http://fmg-www.cs.ucla.edu/geoff/ispell.html>программу <tt>ispell</tt></a>. К ней имеются <a href=http://fmg-www.cs.ucla.edu/geoff/ispell-dictionaries.html>орфографические словари многих языков</a>, также свободно распространяемые. Я подготовил <a href="http://oldrus-ispell.sourceforge.net/">словарь для дореформенной орфографии <tt>oldrus-ispell</tt></a>, на базе прекрасного <a href=ftp://scon155.phys.msu.su/pub/russian/ispell/>словаря для современного русского правописания</a> <a href=http://scon155.phys.msu.su/~swan/>А. И. Лебедева</a>. Текущая версия
+<tt>0.99f4p16</tt>
+отражает версию
+<tt>0.99f4</tt>
+словаря <tt>rus-ispell</tt>. (См. инструкции в этих файлах. Пока что всё работает только под Unix!) Словарь может быть собран в кодировках KOI8-C или CP-1251. (См. <a href="http://sourceforge.net/projects/oldrus-ispell/">проект на SourceForge: там можно скачать самые что ни на есть свежие версии</a>.)
+<dd>Грамматика старой орфографии поддерживается полностью. Начато систематическое добавление в словарь грамматической информации и расширение состава порождаемых форм по сравнению с <tt>rus-ispell</tt>.
+
+<a name=7></a><h4 align=right>Convert from new to old orthography</h4>
+
+<table border=1 align=left>
+<tr><td><table>
+<tr><td align=center><font size=-1><b>Download converter:</b></font>
+<tr><td><font size=-1><a href="http://oldrus-ispell.sourceforge.net/text_n2o.exe"><tt>text_n2o.exe</tt></a> (Win9x)</font>
+</table>
+</table>
+
+<p><dd>А вот -- экспериментальный <a href="http://skripty.virtualave.net/oldrus/">конвертор новой орфографии в старую</a>. Конвертор годится только для перевода отдельных слов (синтаксический анализ текста не производится). В пакет <tt>oldrus-ispell</tt> входит скрипт <tt>text_new2old.pl</tt>, который способен эффективно переводить большие тексты из современной орфографии в старую. (Конечно, некоторые слова невозможно однозначно перевести в старую орфографию; в таких случаях скрипт может выдать несколько вариантов.) Имеется также адаптация этого скрипта для систем M$ Windows: скачайте <a href="http://oldrus-ispell.sourceforge.net/text_n2o.exe"><tt>text_n2o.exe</tt></a> и следуйте <tt>ReadMe.txt</tt>.
+
+<p><hr>
+
+<a href=email_me.html>Пишите мне</a>
+<hr>
+<font color=white><a name="

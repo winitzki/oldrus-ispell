@@ -1,0 +1,26 @@
+#!/bin/sh -
+
+set -e
+
+ourname=oldrussian
+
+while [ "$1" != "" ]
+do
+ case "$1" in
+  upgrade) upgrade="Yes" ;;
+  configure) configure="Yes" ;;
+ esac
+ shift
+done
+
+if [ -n "$configure" ]
+then
+ update-alternatives --verbose --install 				\
+	/usr/lib/ispell/default.hash ispell-dictionary.hash 		\
+	/usr/lib/ispell/$ourname.hash 5				\
+	--slave /usr/lib/ispell/default.aff ispell-dictionary.aff 	\
+	/usr/lib/ispell/$ourname.aff > /dev/null
+
+ update-ispell-dictionary
+
+fi

@@ -1,0 +1,104 @@
+htmluni.pl - convert text between 8-bit encodings and HTML-encoded Unicode
+
+	Summary
+
+The script htmluni.pl is a convertor between plain text encodings. The main use
+is to convert text with Unicode characters encoded as HTML entities, e.g.
+
+	&#1042;&#1123;&#1088;&#1072;
+	&#1089;&#1087;&#1072;&#1089;&#1077;&#1090;&#1098;
+	&#1056;&#1086;&#1089;&#1089;&#1110;&#1102;!
+
+to a more readable form, in a particular 8-bit encoding. The script can also
+produce text with such HTML entities. Finally, the script can transform a UTF-8
+encoded text into an 8-bit encoding with HTML entities for unavailable
+characters, or produce UTF-8 encoded text from an 8-bit text.
+
+	Usage
+
+The script reads from standard input and writes to standard output. A short
+usage summary is printed when the script is invoked without arguments:
+
+	> htmluni.pl
+	Converts text from/to 8-bit / HTML with Unicode entities / UTF-8. Usage:
+	htmluni.pl [-fromuni|-touni] -map={file} [-utf8] [-bylines] < infile > outfile
+
+The script has two main modes of operation: a transformation "from Unicode" to
+8-bit, and a transformation "to Unicode" from 8-bit. The default mode is "from
+Unicode".
+
+The flag "-utf8" or "-utf-8" indicates that the text on the Unicode side is to
+be represented in the UTF-8 encoding. The default is to assume that the Unicode
+side is encoded by 7-bit ASCII HTML entities (as in the example above).
+
+The flag "-map" is obligatory. One must specify the mapping file of the 8-bit
+encoding into Unicode. The format of the mapping file is similar to that of the
+standard encoding maps, e.g.
+
+	0x41    0x0041  #       LATIN CAPITAL LETTER A 
+	0x42    0x0042  #      	LATIN CAPITAL LETTER B 
+	0x87    0x00A7  #       SECTION SIGN 
+	0x88    0x20AC 	#       EURO SIGN
+
+and so on. Of course, the comments do not have to be present in the file.
+
+
+The flag "-bylines" means "read the input line by line and print output line by
+line". The default is to read the whole input text at once, process it in
+memory, and print the whole resulting text at once. (The flag might be useful
+for systems with small memory size.)
+
+An additional feature of the HTML entity translation is that ISO HTML entities
+such as "&agrave;" or "&plusmn;" are recognized in the 8-bit text and converted
+into their Unicode equivalents. This allows to prepare a text in a fixed 8-bit
+encoding with occasional foreign characters inserted as ISO HTML entities.
+
+	Typical examples of usage
+
+1. You receive an email that has HTML entities like &#1024; instead of letters.
+You guess that this email is written using Cyrillic characters and you would
+like to try viewing it in the code page KOI8-RU. You could save this email as a
+file "1.txt", prepare a terminal with a KOI8-RU font, and run the commands
+
+	htmluni.pl -fromuni -map=/path/to/KOI8-RU < 1.txt > 1-koi8-ru.txt
+	cat 1-koi8-ru.txt
+
+Now the file "1-koi8-ru.txt" contains some 8-bit text. Any characters not
+present in KOI8-RU will remain HTML-encoded Unicode entities of the form
+"&#NNNN;". (You can guess my motivation for writing this script.)
+
+2. You prepared an answer in KOI8-RU encoding and you would like to send it
+back to that person as HTML-encoded Unicode. You write the text in the KOI8-RU
+encoding as a file "2.txt" and run the command
+
+	htmluni.pl -touni -map=/path/to/KOI8-RU < 2.txt > 2-html.txt
+
+Now the file "2-html.txt" looks similar to the "&#XXXX;&#YYYY;" gibberish you
+saw before. Note that in your "2.txt" you may use arbitrary ISO HTML entities
+(such as "&agrave;") as well as arbitrary Unicode HTML entities ("&#NNNN;"), in
+addition to the characters provided by the 8-bit code page.
+
+3. You have a text file "3.txt" in UTF-8 Unicode and you would like to try
+viewing it in the KOI8-RU encoding. You run the command
+
+	htmluni.pl -utf8 -map=/path/to/KOI8-RU -fromuni < 3.txt > 3-koi8-ru.txt
+
+Now the file "1-koi8-ru.txt" contains some 8-bit text. Any characters not
+present in KOI8-RU will become HTML-encoded Unicode entities of the form
+"&#NNNN;".
+
+4. You have a text file "4.txt" in KOI8-RU encoding with occasional HTML
+entities for foreign characters, and you would like to convert this text to
+Unicode UTF-8. You run the command
+
+	htmluni.pl -map=/path/to/KOI8-RU -touni -utf8 < 4.txt > 4-utf8.txt
+
+Now the file "4-utf8.txt" contains straight UTF-8 encoded text with all
+HTML-encoded entities converted to Unicode.
+
+
+	Revision history
+
+Version 1. Basic functionality, -map, -fromuni/-touni.
+
+Version 2. New flags -utf8, -bylines. Added all ISO HTML entities (&agrave; etc.).

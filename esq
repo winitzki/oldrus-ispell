@@ -1,0 +1,153 @@
+#!/usr/bin/perl -w
+
+# esq, unesq routines: slightly modified "sq", much better compression of *.esq.{gz,bz2} than *.sq.{gz,bz2}
+# Benchmarks:
+#-rw-r--r-- 12925857 Jul 27 16:17 hugelist.koi
+#-rw-r--r--  4161308 Jul 27 16:23 hugelist.koi.sq
+#-rw-r--r--  4161308 Jul 27 16:18 hugelist.koi.esq
+#-rw-r--r--  3089501 Jul 27 16:19 hugelist.koi.bz2
+#-rw-r--r--  2815971 Jul 27 16:18 hugelist.koi.gz
+#-rw-r--r--   595724 Jul 27 16:24 hugelist.koi.sq.gz
+#-rw-r--r--   383304 Jul 27 16:23 hugelist.koi.esq.gz
+#-rw-r--r--   312912 Jul 27 16:24 hugelist.koi.sq.bz2
+#-rw-r--r--   221823 Jul 27 16:24 hugelist.koi.esq.bz2
+# Compression ratio after "esq | bzip2" is 58.2 : 1
+
+# Script placed by Serge Winitzki in public domain. Version February 2001
+# Usage: esq [-d] [-sq] [-begchar=X] [-endchar=X] < infile > outfile
+
+# Format: each line of input corresponds to one line of output. Empty line of input gives an empty line of output. If a line of input has a common starting substring with the previous line, this substring is replaced by a single character which code denotes the length of the common substring. The line before the first line is defined to be empty. Characters starting from ASCII code [endchar] denote length counted from the end of the previous string; characters starting from [begchar] denote length counted from the beginning of the previous string.
+# Note that the file does not have any information about what [begchar] and [endchar] were used for encoding. So if you use non-default values you need to specify correct values also when unsqueezing ("esq -d -begchar X ...").
+# The "-sq" option imitates the standard "sq" utility: length is denoted from the eginning of the previous string by the characters '0-9', 'A-Z', 'a-z'. If "-sq" is given, then "-begchar" and "-endchar" options are ignored.
+
+# Revision history:
+# February 2001
+#	Fixed bug when reading identical lines
+# January 2001
+#	Added -sq option because standard "sq" is buggy
+# June 2000
+#	Fixed bug when a line of input is empty after an empty line
+#	Special treatment for empty lines
+# May 2000
+#	Initial version: minimize after-gzip size
+#	changed algorithm to search a little quicker
+
+if ("@ARGV" =~ /-sq/) {
+	$want_sq = 1;
+	$sq_b = 0x30;
+	$sq_e = 0x100;
+	$sq_bx = 62;
+	$sq_ex = -1;
+} else {
+	$sq_b = 0xA0;	# Default begchar
+	$sq_e = 0x20;	# Default endchar
+
+	if ("@ARGV" =~ /-endchar=(.)/) {
+		$sq_e = unpack("C", $1);
+	}
+
+	if ("@ARGV" =~ /-begchar=(.)/) {
+		$sq_b = unpack("C", $1);
+	}
+
+	# Max values of counters
+	$sq_bx = ($sq_e > $sq_b) ? $sq_e - $sq_b - 1 : 255 - $sq_b;
+	$sq_ex = ($sq_b > $sq_e) ? $sq_b - $sq_e - 1 : 255 - $sq_e;
+
+}
+
+$line = "";	# Initial sq state
+$i = 0;	# Initial index
+
+$do_unesq = ("@ARGV" =~ /-d/) ? 1 : 0;
+
+if ("@ARGV" =~ /-h/) {
+	print STDERR "esq: squeeze wordlists\nUsage: esq [-d] [-sq] [-begchar=X] [-endchar=X] < infile > outfile\n";
+	exit;
+}
+
+# Process input and print output line by line
+if (not $do_unesq) {
+	while (<STDIN>) {
+		$_ =~ s/\n$//;
+		print &sq_evolve() . "\n";
+	}
+} else {	# unesq
+	while (<STDIN>) {
+		$_ =~ s/\n$//;
+		print &unsq_evolve() . "\n";
+	}
+}
+
+exit;
+
+# Subroutines that evolve $line and act on $_. Neither $line nor $_ should contain a trailing \n
+
+sub sq_evolve {
+	# $_ is the current line of text, $line is the previous line
+
+	$minlen = length($_);
+
+	# If current line is empty, output also an empty line and retain $line
+	if ($minlen == 0) {
+		return "";
+	}
+	# Try to speed up if we can start scanning from some value of $i, say at 4
+	# Guarantee that $line no shorter than $i
+	$i = ($minlen < 4) ? $minlen : 4;
+	$i = (substr($line, 0, $i) eq substr($_, 0, $i)) ? $i : 0;
+	# Now find the largest common starting substring of $line and $_
+	$minlen = length($line) if ($minlen > length($line));
+	while ($i < $minlen and (substr($line, $i, 1) eq substr($_, $i, 1))) {
+		++$i;
+	}
+	# $i is the index in the old string "$line". We shall not change $i but prepare $index to be the character code.
+	# At first, check if we can represent it by counting from the end
+	if ($i != 0 and length($line) - $i <= $sq_ex) {
+		$index = length($line) - $i + $sq_e;
+	} elsif ($i <= $sq_bx) {	# Try counting from the beginning
+		$index = $i + $sq_b;
+	} else {	# Can't represent full substring, so resort to maxing out and counting from the beginning
+		$i = $sq_bx;
+		$index = $i + $sq_b;
+	}
+	$line = $_;
+	# Now we have the number in $i and we need to represent it
+	( ($want_sq) ? &sq_code2char() : chr($index) ) . substr($line, $i);# . "\n";
+}
+
+sub sq_code2char {
+# Convert index $i into char according to sq rules
+	return chr($i+0x30) if ($i <= 9);
+	return chr($i-10+0x41) if ($i <= 35);
+	return chr($i-36+0x61) if ($i <= 61);
+}
+
+sub sq_char2code {
+# Convert char $i into index according to sq rules
+	return ($i+36-0x61) if ($i >= 0x61);
+	return ($i+10-0x41) if ($i >= 0x41);
+	return ($i-0x30) if ($i >= 0x30);
+}
+
+sub unsq_evolve {
+	if (length($_) == 0) {
+		return "";
+	}
+	# First read $i, then prepare $index to be the real index
+#	$i = unpack("C", substr($_, 0, 1));
+	$i = ord;
+	if ($want_sq) {
+		$index = &sq_char2code();
+	} elsif ($i >= $sq_e and $i - $sq_e <= $sq_ex) {
+		$index = length($line) - ($i - $sq_e);
+	} elsif ($i >= $sq_b and $i - $sq_b <= $sq_bx) {
+		$index = $i - $sq_b;
+	} else {
+		print STDERR "esq: error: invalid charcode $i.\n";
+		$index = 0;
+	}
+
+	$line = substr($line, 0, $index) . substr($_, 1);
+
+}

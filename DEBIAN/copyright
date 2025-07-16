@@ -1,0 +1,33 @@
+The package "oldrus-ispell" is a set of modifications to the original
+package rus-ispell by Alexander Lebedev. Source to the oldrus-ispell
+package is distributed as a patch together with the (compressed) original
+rus-ispell source. The patches and scripts that make "oldrus-ispell"
+out of "rus-ispell", as well as all additional scripts in
+"oldrus-ispell", are Copyright 2001 by Serge Winitzki
+<winitzki@geocities.com> and are distributed under the GNU Public
+License (GPL) version 2 or later. However, the entire package or any
+resulting dictionaries in source or binary form must be distributed
+under the non-open source terms of the original license.
+
+Original copyright notice from the rus-ispell package follows:
+
+---
+
+The main components of RUS-ISPELL package:
+
+    the Russian affix file (russian.aff.koi) and a set of dictionaries
+    (base.koi, computer.koi, geography.koi, science.koi)
+
+in its original (koi8-r) and any forms produced from it (including
+cp866, iso8859-5, and other encodings) are copyright (c) 1997-2000 by
+Alexander Lebedev.
+
+Permission to use, copy, redistribute is granted.  Permission to
+redistribute modifications in patch form is granted.  Permission
+to redistribute binaries made of modified sources is granted.
+All other rights reserved.
+
+Alexander Lebedev
+<swan@mch.chem.msu.su>
+
+---

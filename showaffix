@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Print all affixes from a Russian word in old orthography
+# Requires the script "323" to convert Russkaja Latinica to KOI8-C
+# Also requires to have "oldrussian.aff" already compiled
+
+[ "x$2" = x ] && {
+	echo "Usage: showaffix 'russkoeslovo' FLAGS"
+	exit
+}
+
+slovo=$1
+flags=$2
+# Using affix file "$aff"
+aff="oldrussian.aff"
+
+perl affixize `echo "$1" | 323 -lat2koi -oldrus` "$2" $aff 

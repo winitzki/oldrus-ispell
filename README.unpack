@@ -1,0 +1,37 @@
+This file provides technical documentation for the method of packing
+and unpacking the oldrus-ispell dictionary package.
+
+The package "oldrus-ispell" is a derivative work of the package "rus-ispell"
+by Alexander Lebedev. Since A. Lebedev has provided a restrictive license
+for his package "rus-ispell" that does not allow direct distribution of
+modified sources, the distribution of "oldrus-ispell" consists of an
+unmodified copy of "rus-ispell" (the subdirectory "rus-ispell-orig")
+together with scripts and patch files that will create an "oldrus-ispell"
+dictionary out of the "rus-ispell" dictionary at installation time.
+Therefore we call the "oldrus-ispell" package a "patch distribution". The
+Makefile provides the targets "dist" to prepare a packed patch distribution
+and "unpack" to prepare the oldrus-ispell sources using the patch
+distribution. Unmodified, original sources of the "rus-ispell" package will
+be found in "rus-ispell-orig/" after "make unpack" is run. The patch
+distribution has been heavily optimized for size (but not for time or disk
+space used during packing or unpacking). Here we describe the procedures
+used to pack and unpack the files.
+
+The "oldrus-ispell" dictionary differs from the "rus-ispell" dictionary
+in several aspects: 1) words use old Russian orthography instead of the
+contemporary one; 2) new words have been added to "oldrus-ispell"
+dictionary; 3) some words in the "rus-ispell" dictionary have different
+affix flags; 4) the affix file is heavily edited to reflect old Russian
+orthography. The scripts "make-orpatch.sh" and "dict-diff.sh" prepare a
+set of files describing differences between the rus-ispell and
+oldrus-ispell dictionaries; the scripts "make-orunpack.sh" and
+"dict-patch.sh" perform the reverse operation and restore the
+"oldrus-ispell" files from "rus-ispell" files. The affix file (renamed "oldrussian.aff.koi") is simply added to the distribution (patches are not provided since almost every line has been edited), as are files not present in the rus-ispell package.
+
+To minimize differences between new and old dictionaries, the script "rus_new2old.pl" is first used to convert most words into old orthography. Some words, however, are not converted correctly by that script; also, new words need to be added and some words need to be replaced.
+
+The scripts "dict-diff.sh" and "dict-diff.pl" do the gruntwork of extracting the minimal set of differences between dictionaries. Running "dict-diff.sh dict1 dict2 name" creates the files 'name.add', 'name.rem', 'name.flags' that contain the lists of words added, words removed, and affix flags changed from dict1 to dict2. The differencing procedure is used twice because I noted that base.add and base.rem are similar to each other and could be differenced again to reduce the patch size. There are two variants of dict-diff.pl: one will use around 36 MB of RAM when working on base.koi, and another (dict-diff-lowmem.pl) will use only 2 MB but work about 2x slower.
+
+Finally, the precompressor "esq" is used on all dictionary files and patch result files. This program (implemented in Perl) is similar to the "sq" utility from the "ispell" package, except that it encodes the length of the common word segment starting from the end of the word rather than from the beginning of the word. This significantly improves compression of typical dictionary files. The main dictionary "base.koi" (residing in the rus-ispell-orig subdirectory) is also precompressed by "esq" before packing and converted into "base.koi.esq".
+
+After all these optimizations, the distribution size of "oldrus-ispell" (which contains a full copy of "rus-ispell" inside it) is about the same as that of the rus-ispell.tar.gz package distributed by A. Lebedev.

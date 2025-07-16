@@ -1,0 +1,39 @@
+This is a rough readme file for creating a Russian dictionary for ispell.
+
+You will first need to get ispell 3.0+ it is available from
+ftp.cs.ucla.edu [131.179.128.34]  In local.h comment out NO8BIT.
+
+By default the dictionary is in KOI-8 encoding, but I may change this.
+The dictionary and the russian.aff can made in GOSTCII/ISO 8859-5 or
+ALT (Bryabrin's Al'ternativnyj variant).  NOTE: xterm doesn't seem to
+like ALT.
+
+BUILDING:
+
+  To build you must have buildhash in your $PATH and have cc and sed.
+
+  1) Edit Makefile and make sure LIB is the directory where ispell will
+     look for the dictionary.
+  2) Make the appropriate encode for your system.  (KOI-8 (default),
+     GOST/ISO, or ALT).  To do this use make GOST ISO ALT or KOI8
+     (default with just make).
+     make GOST
+     make ALT
+     make
+  3) make install
+
+TO USE:
+
+	type 'ispell -d russian <filename>'
+
+
+Please send any illegal words, addtional words, bugs, bugfixes and
+suggestions to Neal Dalton (nrd@cray.com or uunet!cray!nrd)
+
+Neal  /\    /   _     /   \|||/                   Neal Dalton
+     /  \  / _  _\   /   /     \                  Cray Research, inc
+    /    \/_</_(_/\_/   (  o o  )                 655-F Lone Oak Dr.
+                         \  ^  /                  Eagan, MN 55121
+                          \ 0 /                 
+Internet: nrd@cray.com     \_/                    Fax:   (612) 683-5599
+    uucp: uunet!cray!nrd                          Phone: (612) 683-5607

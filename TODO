@@ -1,0 +1,8 @@
+			oldrus-ispell TODO list
+
+2.	Write technical level documentation on a) how the patching and packing and other scripts work, b) how the affix file is done, c) how grammatical information is stored and generated.
+
+3.	Make full package gramdict-ru. Target is to generate a large wordlist with full grammatical information.
+
+
+7. Correct some errors with new-rus ("yo" again...)
